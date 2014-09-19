@@ -5,7 +5,7 @@ import shutil
 
 
 def delete_archived_item_dirs():
-    for item in open(sys.argv[-1]):
+    for item in open('itemlist.txt'):
         try:
             files = os.listdir(item.strip())
         except OSError:
