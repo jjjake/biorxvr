@@ -14,6 +14,8 @@ import magic
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
+ROOT_DIR = os.get_cwd()
+
 FIRST_PAGE = ('http://biorxiv.org/search/%20jcode%3Abiorxiv%20numresults%3A100%20sort%3A'
               'publication-date%20direction%3Adescending%20format_result%3Astandard')
 
@@ -46,9 +48,10 @@ def download_pdf(url):
 
     log.info('downloading metadata and data for item {0}'.format(metadata['identifier']))
 
-    if not os.path.exists(metadata['identifier']):
-        os.mkdir(metadata['identifier'])
-    os.chdir(metadata['identifier'])        
+    item_dir = os.path.join(ROOT_DIR, metadata['identifier'])
+    if not os.path.exists(item_dir):
+        os.mkdir(item_dir)
+    os.chdir(item_dir)        
 
     with open('{0}.json'.format(metadata['identifier']), 'w') as fp:
         json.dump(metadata, fp)
@@ -74,7 +77,7 @@ def download_pdf(url):
             fname = url.split('/')[-1]
             with open(fname, 'wb') as fp:
                 fp.write(r.content)
-    os.chdir('..')
+    os.chdir(ROOT_DIR)
     log.info('successfully downloaded item {0}'.format(metadata['identifier']))
 
 def get_md(soup):
