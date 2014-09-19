@@ -9,5 +9,8 @@ download-one:
 upload:
 	python biorxivr/upload.py
 
-clean:
+itemlist.txt:
+	curl 'https://archive.org/metamgr.php?f=exportIDs&w_mediatype=texts&w_collection=biorxiv*' > $@
+
+clean: itemlist.txt
 	python biorxivr/utils.py clean
