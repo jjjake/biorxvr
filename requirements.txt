@@ -1,0 +1,5 @@
+beautifulsoup4==4.3.2
+futures==2.1.6
+internetarchive==0.7.2
+requests==2.3.0
+python-magic==0.4.6
