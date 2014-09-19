@@ -14,7 +14,7 @@ import magic
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
-ROOT_DIR = os.get_cwd()
+ROOT_DIR = os.getcwd()
 
 FIRST_PAGE = ('http://biorxiv.org/search/%20jcode%3Abiorxiv%20numresults%3A100%20sort%3A'
               'publication-date%20direction%3Adescending%20format_result%3Astandard')
@@ -51,12 +51,11 @@ def download_pdf(url):
     item_dir = os.path.join(ROOT_DIR, metadata['identifier'])
     if not os.path.exists(item_dir):
         os.mkdir(item_dir)
-    os.chdir(item_dir)        
 
-    with open('{0}.json'.format(metadata['identifier']), 'w') as fp:
+    json_fname = os.path.join(item_dir, '{0}.json'.format(metadata['identifier']))
+    with open(json_fname, 'w') as fp:
         json.dump(metadata, fp)
 
-    fname = '{0}.pdf'.format(metadata['identifier'])
     pdf_url = '{0}.full.pdf'.format(url)
     r = requests.get(pdf_url)
     r.raise_for_status()
@@ -67,6 +66,7 @@ def download_pdf(url):
         log.error('{0}/{0}.pdf is not a PDF, not archiving'.format(metadata['identifier']))
         return
 
+    fname = os.path.join(item_dir, '{0}.pdf'.format(metadata['identifier']))
     with open(fname, 'wb') as fp:
         fp.write(r.content)
 
@@ -74,10 +74,9 @@ def download_pdf(url):
         if 'highwire/filestream' in tag.attrs.get('href', ''):
             url = 'http://biorxiv.org{0}'.format(tag.attrs.get('href'))
             r = requests.get(url)
-            fname = url.split('/')[-1]
+            fname = os.path.join(item_dir, url.split('/')[-1])
             with open(fname, 'wb') as fp:
                 fp.write(r.content)
-    os.chdir(ROOT_DIR)
     log.info('successfully downloaded item {0}'.format(metadata['identifier']))
 
 def get_md(soup):
